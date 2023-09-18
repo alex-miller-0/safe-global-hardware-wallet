@@ -5,19 +5,20 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/alex-miller-0/openpgp-secp256k1-wallet/pkg/api"
 	"github.com/alex-miller-0/openpgp-secp256k1-wallet/pkg/ux"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
-	"github.com/alex-miller-0/safe-global-smartcard/internal/request"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/util.go"
 	"github.com/google/subcommands"
 )
 
 const (
-	StatusDesc = "Get status for a given Safe. " +
-		"You may provide a Safe address or tag."
+	StatusDesc = "Print the Ethereum address on the current smartcard as well " +
+		"as all saved safes for which it is an owner."
 )
 
 type Status struct {
-	Network string
+	Pin string
 }
 
 func (*Status) Name() string { return "status" }
@@ -27,15 +28,15 @@ func (*Status) Synopsis() string {
 }
 
 func (*Status) Usage() string {
-	return "status [--network <network>] <safe>\n"
+	return "status\n"
 }
 
 func (s *Status) SetFlags(flagSet *flag.FlagSet) {
 	flagSet.StringVar(
-		&s.Network,
-		"network",
-		"ethereum",
-		"The network where this Safe exists",
+		&s.Pin,
+		"pin",
+		"",
+		"The PIN for the smartcard",
 	)
 }
 
@@ -44,36 +45,38 @@ func (s *Status) Execute(
 	flagSet *flag.FlagSet,
 	_ ...any,
 ) subcommands.ExitStatus {
-	if s.Network != "ethereum" {
-		ux.Errorln("Only Ethereum is supported at this time.")
-		return subcommands.ExitFailure
+	// Check on connected smartcard
+	if s.Pin == "" {
+		ux.PromptForSecret("Enter PIN: ", &s.Pin)
 	}
-	safeArg := flagSet.Arg(0)
-	if safeArg == "" {
-		fmt.Println(s.Usage())
-		return subcommands.ExitFailure
-	}
-	safe := db.SearchSafe(safeArg)
-	if safe == nil {
-		ux.Errorf("no safe found: %s\n", safeArg)
-		return subcommands.ExitFailure
-	} else if safe.Network != s.Network {
-		ux.Errorf("safe %s is not on network %s\n", safeArg, s.Network)
-		return subcommands.ExitFailure
-	}
-	status, err := request.GetStatus(safe)
+	pubBytes, err := api.GetPub(s.Pin)
 	if err != nil {
-		ux.Errorln(err.Error())
+		ux.Errorf("error getting pubkey from smartcard: %s", err.Error())
 		return subcommands.ExitFailure
 	}
-	fmt.Printf(
-		"Safe Status:\nAddress: %s\nNonce: %d\nThreshold: %d\nOwners:\n",
-		status.Address,
-		status.Nonce,
-		status.Threshold,
-	)
-	for _, owner := range status.Owners {
-		fmt.Printf("  - %s\n", owner)
+	address, err := util.GetEthereumAddress(pubBytes)
+	if err != nil {
+		ux.Errorf("error converting pubkey to address: %s", err.Error())
+		return subcommands.ExitFailure
 	}
+	var ownedSafes []db.Safe
+	safes := db.GetSafes()
+	for _, safe := range safes {
+		for _, owner := range safe.Owners {
+			if owner == address {
+				ownedSafes = append(ownedSafes, safe)
+			}
+		}
+	}
+	str := fmt.Sprintf("\n-----\nConnected Smartcard: %s\n-----\n", address)
+	if len(ownedSafes) == 0 {
+		str += "No owned safes found.\n"
+	} else {
+		str += "Owned safes:\n"
+	}
+	for _, safe := range ownedSafes {
+		str += safe.String()
+	}
+	ux.Infoln(str)
 	return subcommands.ExitSuccess
 }

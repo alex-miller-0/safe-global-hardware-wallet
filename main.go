@@ -16,6 +16,7 @@ func main() {
 	subcommands.Register(&manager.Add{}, "")
 	subcommands.Register(&manager.List{}, "")
 	subcommands.Register(&manager.Update{}, "")
+	subcommands.Register(&manager.Sign{}, "")
 	flag.Parse()
 	ctx := context.Background()
 	os.Exit(int(subcommands.Execute(ctx)))

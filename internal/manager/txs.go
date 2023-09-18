@@ -76,6 +76,11 @@ func (t *Txs) Execute(
 	}
 	str := fmt.Sprintf("\nFound %d pending transactions:\n", len(txs))
 	for i, tx := range txs {
+		err := tx.Verify()
+		if err != nil {
+			ux.Errorln(err.Error())
+			return subcommands.ExitFailure
+		}
 		str += fmt.Sprintf("\n--- [Transaction %d/%d] ---\n", i+1, len(txs))
 		str += tx.String()
 		str += "-------------------------"

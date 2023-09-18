@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/tx"
 )
 
 func GetStatus(safe *db.Safe) (*SafeStatus, error) {
@@ -23,7 +24,7 @@ func GetStatus(safe *db.Safe) (*SafeStatus, error) {
 	return status, nil
 }
 
-func GetPendingTransactions(safe *db.Safe) ([]SafeTransaction, error) {
+func GetPendingTransactions(safe *db.Safe) ([]tx.SafeTransaction, error) {
 	status, err := GetStatus(safe)
 	if err != nil {
 		return nil, err

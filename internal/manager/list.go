@@ -3,7 +3,6 @@ package manager
 import (
 	"context"
 	"flag"
-	"fmt"
 
 	"github.com/alex-miller-0/openpgp-secp256k1-wallet/pkg/ux"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
@@ -36,18 +35,12 @@ func (*List) Execute(
 	tags := db.GetTags()
 	str := "\n-----\nTags:\n"
 	for _, t := range tags {
-		str += fmt.Sprintf("  - %s: %s\n", t.Tag, t.Address)
+		str += t.String()
 	}
 	str += "\n-----\nSafes:\n"
 	safes := db.GetSafes()
 	for _, s := range safes {
-		str += fmt.Sprintf(
-			"  - %s: %s\n    threshold: %d\n    owners: %v",
-			s.ID.Tag,
-			s.ID.Address,
-			s.Threshold,
-			s.Owners,
-		)
+		str += s.String()
 	}
 	ux.Infoln(str)
 	return subcommands.ExitSuccess
