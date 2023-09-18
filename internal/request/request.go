@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-)
 
-const (
-	NetworkEthereum = "ethereum"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/networks"
 )
 
 func getStatus(safe, network string) ([]byte, error) {
-	base, err := baseURL(network)
+	base, err := networks.BaseRequestURL(network)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +22,7 @@ func getStatus(safe, network string) ([]byte, error) {
 }
 
 func getUnexecutedTxs(safe, network string, nonceGt int) ([]byte, error) {
-	base, err := baseURL(network)
+	base, err := networks.BaseRequestURL(network)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +37,4 @@ func getUnexecutedTxs(safe, network string, nonceGt int) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	return io.ReadAll(resp.Body)
-}
-
-func baseURL(network string) (string, error) {
-	switch network {
-	case NetworkEthereum:
-		return "https://safe-transaction-mainnet.safe.global/api/", nil
-	default:
-		return "", fmt.Errorf("network %s not supported", network)
-	}
 }

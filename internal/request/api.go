@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/networks"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/tx"
 )
 
@@ -38,6 +39,12 @@ func GetPendingTransactions(safe *db.Safe) ([]tx.SafeTransaction, error) {
 	err = json.Unmarshal(resp, &txs)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling pending transactions: %w", err)
+	}
+	for i := range txs.Results {
+		txs.Results[i].ChainId, err = networks.ChainIDFromNetwork(safe.Network)
+		if err != nil {
+			return nil, fmt.Errorf("error getting chain ID: %w", err)
+		}
 	}
 	return txs.Results, nil
 }

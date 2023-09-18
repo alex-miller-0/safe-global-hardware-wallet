@@ -12,7 +12,6 @@ import (
 func main() {
 	subcommands.Register(subcommands.HelpCommand(), "")
 	subcommands.Register(&manager.Status{}, "")
-	subcommands.Register(&manager.Txs{}, "")
 	subcommands.Register(&manager.Add{}, "")
 	subcommands.Register(&manager.List{}, "")
 	subcommands.Register(&manager.Update{}, "")

@@ -112,6 +112,18 @@ func GetSafes() []Safe {
 	return d.Safes
 }
 
+func GetOwnedSafes(address string) []Safe {
+	var ownedSafes []Safe
+	for _, safe := range d.Safes {
+		for _, owner := range safe.Owners {
+			if owner == address {
+				ownedSafes = append(ownedSafes, safe)
+			}
+		}
+	}
+	return ownedSafes
+}
+
 func Commit() error {
 	Init()
 	c := getDbConfig()

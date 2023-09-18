@@ -10,9 +10,18 @@ type (
 		Value                string `json:"value"`
 		Data                 string `json:"data"`
 
-		Operation   int         `json:"operation"`
-		DataDecoded DecodedData `json:"dataDecoded"`
-		Signatures  string      `json:"signatures"`
+		Safe           string      `json:"safe"`
+		Operation      int         `json:"operation"`
+		DataDecoded    DecodedData `json:"dataDecoded"`
+		Signatures     string      `json:"signatures"`
+		BaseGas        int         `json:"baseGas"`
+		SafeTxGas      int         `json:"safeTxGas"`
+		GasToken       string      `json:"gasToken"`
+		RefundReceiver string      `json:"refundReceiver"`
+
+		SafeTxHash string `json:"safeTxHash"`
+
+		ChainId uint64 `json:"-"`
 	}
 
 	DecodedData struct {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/alex-miller-0/openpgp-secp256k1-wallet/pkg/ux"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/networks"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/request"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/util"
 	"github.com/google/subcommands"
@@ -44,7 +45,7 @@ func (u *Update) SetFlags(flagSet *flag.FlagSet) {
 	flagSet.StringVar(
 		&u.Network,
 		"network",
-		"ethereum",
+		networks.Mainnet,
 		"[Only used with --safe] The network on which this Safe exists",
 	)
 }
@@ -95,8 +96,8 @@ func (u *Update) updateTag() error {
 }
 
 func (u *Update) updateSafe() error {
-	if u.Network != "ethereum" {
-		return fmt.Errorf("only Ethereum is supported at this time")
+	if !networks.IsSupportedNetwork(u.Network) {
+		return fmt.Errorf("network %s not supported", u.Network)
 	}
 	record := db.Safe{
 		ID:      db.AddressTag{Address: u.Address, Tag: u.Tag},
