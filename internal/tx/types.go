@@ -32,6 +32,7 @@ type (
 	}
 
 	DecodedValue struct {
+		Data        string      `json:"data"`
 		DataDecoded DecodedData `json:"dataDecoded"`
 		Operation   int         `json:"operation"`
 		To          string      `json:"to"`

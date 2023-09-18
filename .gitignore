@@ -1,2 +1,4 @@
 bin
 .db.json
+safe-global-encoder
+vendor

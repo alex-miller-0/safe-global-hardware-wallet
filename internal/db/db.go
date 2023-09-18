@@ -39,12 +39,12 @@ func SwapAddress(address string) string {
 	Init()
 	for _, t := range d.Tags {
 		if t.Address == address {
-			return fmt.Sprintf("{{%s}}", t.Tag)
+			return fmt.Sprintf("🏷️  (%s)", t.Tag)
 		}
 	}
 	for _, s := range d.Safes {
 		if s.ID.Address == address {
-			return fmt.Sprintf("{{%s}}", s.ID.Tag)
+			return fmt.Sprintf("🏷️  (%s)", s.ID.Tag)
 		}
 	}
 	return address

@@ -74,18 +74,22 @@ func (t *Txs) Execute(
 		ux.Errorln(err.Error())
 		return subcommands.ExitFailure
 	}
-	str := fmt.Sprintf("\nFound %d pending transactions:\n", len(txs))
 	for i, tx := range txs {
+		var msg string
 		err := tx.Verify()
 		if err != nil {
-			ux.Errorln(err.Error())
-			return subcommands.ExitFailure
+			msg = fmt.Sprintf("Not verified: %s", err.Error())
+		} else {
+			msg = "✅  Verified"
 		}
-		str += fmt.Sprintf("\n--- [Transaction %d/%d] ---\n", i+1, len(txs))
+		str := fmt.Sprintf("Transaction %d/%d (%s)\n", i+1, len(txs), msg)
 		str += tx.String()
-		str += "-------------------------"
+		if err != nil {
+			ux.Warnln(str)
+		} else {
+			ux.Passln(str)
+		}
 	}
-	ux.Infoln(str)
 
 	return subcommands.ExitSuccess
 }

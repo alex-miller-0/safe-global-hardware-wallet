@@ -8,7 +8,7 @@ import (
 	"github.com/alex-miller-0/openpgp-secp256k1-wallet/pkg/ux"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/db"
 	"github.com/alex-miller-0/safe-global-smartcard/internal/request"
-	"github.com/alex-miller-0/safe-global-smartcard/internal/util.go"
+	"github.com/alex-miller-0/safe-global-smartcard/internal/util"
 	"github.com/google/subcommands"
 )
 

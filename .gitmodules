@@ -1,0 +1,6 @@
+[submodule "safe-global-encoder"]
+	path = safe-global-encoder
+	url = https://github.com/alex-miller-0/safe-global-encoder
+[submodule "vendor/safe-global-encoder"]
+	path = vendor/safe-global-encoder
+	url = https://github.com/alex-miller-0/safe-global-encoder
